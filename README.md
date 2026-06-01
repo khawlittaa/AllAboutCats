@@ -1,4 +1,4 @@
-# 🐱 AllAboutCats — iOS Code Assessment
+# 🐱 AllAboutCats: iOS Code Assessment
 
 A native iOS application that fetches and displays cat breed information from [TheCatAPI](https://thecatapi.com), built as part of an engineering assessment.
 
@@ -7,6 +7,17 @@ A native iOS application that fetches and displays cat breed information from [T
 ## 📱 Screenshots
 
 > List view showing a two-column breed grid with images, names, and origins. Tapping a breed opens a detail screen with photo, weight, life span, description, and temperament tags.
+<table>
+  <tr>
+<td><img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-06-01 at 14 28 57" src="https://github.com/user-attachments/assets/2f62d0d1-12be-45ea-a531-b30bcf3298f6" width="300"/></td>
+<td><img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-06-01 at 14 29 11" src="https://github.com/user-attachments/assets/f9a95bda-5a5a-40cd-aa9f-fbb16ddde76d" width="300"/></td>
+  </tr>
+  <tr>
+    <td align="center">Breed List</td>
+    <td align="center">Breed Detail</td>
+  </tr>
+</table>
+
 
 ***
 
@@ -24,33 +35,33 @@ The project follows **MVVM** with a clean separation between the network layer, 
 
 ```
 AllAboutCats/
-├── AllAboutCatsApp.swift           — App entry point
-├── Info.plist                      — Contains $(CAT_API_KEY) reference
+├── AllAboutCatsApp.swift           App entry point
+├── Info.plist                      Contains $(CAT_API_KEY) reference
 │
 ├── CatInfoView/
-│   ├── CatInfoView.swift           — Breed detail screen
-│   └── CatInfoViewModel.swift      — State management for breed detail
+│   ├── CatInfoView.swift           Breed detail screen
+│   └── CatInfoViewModel.swift      State management for breed detail
 │
 ├── CatsList/
-│   ├── CatsListView.swift          — Two-column breed grid
-│   └── CatsListViewModel.swift     — State management for breed list
+│   ├── CatsListView.swift          Two-column breed grid
+│   └── CatsListViewModel.swift     State management for breed list
 │
 ├── Models/
-│   ├── CatBreed.swift              — Root breed model + computed helpers
-│   ├── CatImage.swift              — Image model
-│   └── Weight.swift                — Weight model (imperial + metric)
+│   ├── CatBreed.swift              Root breed model + computed helpers
+│   ├── CatImage.swift              Image model
+│   └── Weight.swift                Weight model (imperial + metric)
 │
 ├── Services/
-│   └── CatAPIService.swift         — Protocol + live network implementation
+│   └── CatAPIService.swift         Protocol + live network implementation
 │
 ├── Components/
-│   ├── BreedCard.swift             — Card used in the breeds grid
-│   ├── CatAsyncImageView.swift     — Reusable async image with shimmer & fallback
-│   ├── ShimmerView.swift           — Reusable animated shimmer loading effect
-│   ├── SkeletonCard.swift          — Placeholder card shown during loading
-│   └── StatBadge.swift             — Stat pill used in the detail screen
+│   ├── BreedCard.swift             Card used in the breeds grid
+│   ├── CatAsyncImageView.swift     Reusable async image with shimmer & fallback
+│   ├── ShimmerView.swift           Reusable animated shimmer loading effect
+│   ├── SkeletonCard.swift          Placeholder card shown during loading
+│   └── StatBadge.swift             Stat pill used in the detail screen
 │
-└── Assets.xcassets                 — App icons and color assets
+└── Assets.xcassets                 App icons and color assets
 ```
 
 ### Data Flow
@@ -79,14 +90,14 @@ CatInfoView
 CatInfoViewModel (@MainActor)
     │  reads from
     ▼
-CatBreed (already fetched — no extra request needed)
+CatBreed (already fetched, no extra request needed)
 ```
 
 ### SOLID Principles Applied
 
 | Principle | Implementation |
 |---|---|
-| **Single Responsibility** | Each file has one job — `CatAPIService` handles networking, ViewModels handle state, each component in `Components/` renders one thing |
+| **Single Responsibility** | Each file has one job, `CatAPIService` handles networking, ViewModels handle state, each component in `Components/` renders one thing |
 | **Open / Closed** | `CatAPIServiceProtocol` is open to extension without modifying existing code |
 | **Liskov Substitution** | Any conformer of `CatAPIServiceProtocol` substitutes the live service without breaking behaviour |
 | **Interface Segregation** | `CatAPIServiceProtocol` exposes only what ViewModels need — no unused methods |
@@ -97,17 +108,17 @@ CatBreed (already fetched — no extra request needed)
 ## 🛠 Technical Choices
 
 ### Language & Framework
-- **Swift 5.9 + SwiftUI** — Fully native, declarative UI following the latest Apple HIG
-- **Swift Concurrency (`async/await`)** — Structured concurrency for all async work; `@MainActor` on ViewModels guarantees UI updates on the main thread
-- **No third-party libraries** — `URLSession`, `AsyncImage`, and `LazyVGrid` cover all requirements without adding dependency overhead
+- **Swift 5.9 + SwiftUI**: Fully native, declarative UI following the latest Apple HIG
+- **Swift Concurrency (`async/await`)**: Structured concurrency for all async work; `@MainActor` on ViewModels guarantees UI updates on the main thread
+- **No third-party libraries**: `URLSession`, `AsyncImage`, and `LazyVGrid` cover all requirements without adding dependency overhead
 
 ### Networking
-- `CatAPIServiceProtocol` abstracts the network layer — ViewModels never depend on the concrete implementation
+- `CatAPIServiceProtocol` abstracts the network layer, ViewModels never depend on the concrete implementation
 - `JSONDecoder` with `.convertFromSnakeCase` maps the API's `snake_case` keys to Swift's `camelCase` automatically
 - API key injected via the `x-api-key` **HTTP header**, never in the URL (query params appear in server logs and crash reporters)
 
 ### State Management
-ViewModels expose a `State` enum — giving the View a single source of truth with no ambiguous boolean combinations:
+ViewModels expose a `State` enum, giving the View a single source of truth with no ambiguous boolean combinations:
 
 ```swift
 enum State {
@@ -122,15 +133,15 @@ enum State {
 `BreedCard`, `ShimmerView`, `SkeletonCard`, and `StatBadge` each live in their own file under `Components/`, making them:
 - **Independently reusable** across any future screen
 - **Easy to preview in isolation** via `#Preview`
-- **Clearly scoped** — one file, one responsibility
+- **Clearly scoped** one file, one responsibility
 
 ### Image Loading
 `AsyncImage` handles loading with three explicitly designed states:
-- **Loading** — animated `ShimmerView` skeleton
-- **Success** — smooth `.easeIn` fade-in transition
-- **Failure** — friendly paw-print placeholder
+- **Loading**: animated `ShimmerView` skeleton
+- **Success**: smooth `.easeIn` fade-in transition
+- **Failure**: friendly paw-print placeholder
 
-The hero image in `CatInfoView` is a **fully independent layout block** from the info section — its dimensions can never cause text or badges to bleed off-screen regardless of the source image size.
+The hero image in `CatInfoView` is a **fully independent layout block** from the info section, its dimensions can never cause text or badges to bleed off-screen regardless of the source image size.
 
 ***
 
@@ -138,11 +149,11 @@ The hero image in `CatInfoView` is a **fully independent layout block** from the
 
 The API key is never hard-coded in source. The security chain:
 
-1. Raw key lives in `Config/Debug.xcconfig` — **excluded from git via `.gitignore`**
+1. Raw key lives in `Config/Debug.xcconfig`  **excluded from git via `.gitignore`**
 2. `Info.plist` stores only the variable reference: `$(CAT_API_KEY)`
-3. Xcode substitutes the real value at **build time** — source repo never contains the key
+3. Xcode substitutes the real value at **build time**, source repo never contains the key
 4. At runtime, `CatAPIService` reads the key from `Bundle.main` via `object(forInfoDictionaryKey:)`
-5. Key is sent exclusively in the `x-api-key` **request header** — not in query parameters
+5. Key is sent exclusively in the `x-api-key` **request header**: not in query parameters
 
 ```swift
 // Key never appears in the URL
@@ -159,7 +170,7 @@ request.setValue(key, forHTTPHeaderField: "x-api-key")
 - Error screen with retry action
 - `ContentUnavailableView` for error states (iOS 17+)
 - Graceful image fallback using `referenceImageId` CDN URL when the embedded image is absent
-- Optional fields handled safely — the API omits some fields for certain breeds
+- Optional fields handled safely, the API omits some fields for certain breeds
 
 ***
 
